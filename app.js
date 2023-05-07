@@ -14,6 +14,7 @@ app.use(express.json());
 
 // routes
 app.use('/api/v1', authRoute)
+app.use('/api/v1/jobs', authRoute)
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

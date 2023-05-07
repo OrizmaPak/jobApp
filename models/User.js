@@ -1,10 +1,11 @@
 const express = require('express');
-const { Mongoose } = require('mongoose');
+const bcrypt = require('bcryptjs')
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
-
-const UserSchema = new Mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     name:{
-        type: String,
+        type: String,   
         maxLength: [42, 'maximum name length exceeded'],
         required: [true, 'please provide name']
     },
@@ -14,7 +15,8 @@ const UserSchema = new Mongoose.Schema({
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             'please provide a valid email'
         ],
-        required: [true, 'please provide and email']
+        required: [true, 'please provide and email'],
+        unique: true
     },
     password: {
         type: String,
@@ -22,5 +24,12 @@ const UserSchema = new Mongoose.Schema({
         minLength: [5, 'less than minimum password length']
     }
 })
+UserSchema.pre('save', async function(){
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt)
+})
+UserSchema.method.createJWT = function(){
+    return jwt.sign({userID:this._id,name:this.name}, 'jwtsecret', {expiresIn:'2d'})
+}
 
-module.exports = Mongoose.model('User', UserSchema)
+module.exports = mongoose.model('User', UserSchema)

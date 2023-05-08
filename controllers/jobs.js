@@ -1,23 +1,30 @@
-const getAlljobs =(req, res)=>{
-    res.send('omo na get all Jobs oo')
+const Job = require("../models/Job");
+const {StatusCodes} = require('http-status-codes')
+
+const getAlljobs =async(req, res)=>{
+    const job = await Job.find({createdBy: req.user.userId})
+    res.status(StatusCodes.OK).json({job})
 }
 
-const getAJob =(req, res)=>{
-    res.send('omo na get a Jobs oo')
-}
-
-
-const createJob =(req, res)=>{
-    res.send('omo na create a Jobs oo')
-}
-
-
-const updateJob =(req, res)=>{
-    res.send('omo na update a Jobs oo')
+const getAJob =async(req, res)=>{
+    const job = await Job.findOne({_id: req.params.id, createdBy: req.user.userId})
+    res.status(StatusCodes.OK).json({job})
 }
 
 
-const deleteJob =(req, res)=>{
+const createJob =async(req, res)=>{
+    req.body.createdBy = req.user.userId
+    const job = await Job.create({...req.body})   
+    res.status(StatusCodes.CREATED).json({job})
+}
+ 
+
+const updateJob =async(req, res)=>{
+    // const job = await Job.
+}
+
+
+const deleteJob =async(req, res)=>{
     res.send('omo na delete a Jobs oo')
 }
 

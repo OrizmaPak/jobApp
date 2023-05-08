@@ -4,7 +4,8 @@ const JobSchema = new mongoose.Schema({
   company: {
     type: String,
     maxlength: 50,
-    required: [true, 'please provide company']
+    required: [true, 'please provide company'],
+    unique: [true, 'the company already exist']
   },
   position: {
     type: String,

@@ -1,3 +1,5 @@
+const { NotFoundError } = require("../errors");
+const notFound = require("../middleware/not-found");
 const Job = require("../models/Job");
 const {StatusCodes} = require('http-status-codes')
 
@@ -20,12 +22,18 @@ const createJob =async(req, res)=>{
  
 
 const updateJob =async(req, res)=>{
-    // const job = await Job.
+    const job = await Job.findOneAndUpdate({_id: req.params.id, createdBy: req.user.userId}, req.body, {new: true, runValidators:true})
+    res.status(StatusCodes.OK).json({job})
 }
 
 
 const deleteJob =async(req, res)=>{
-    res.send('omo na delete a Jobs oo')
+    try{
+        const job = await Job.findOneAndDelete({_id: req.params.id, createdBy: req.user.userId})
+        res.status(StatusCodes.OK).json({msg:'the job below has been successfully deleted',job})
+    }catch(err){
+        throw new NotFoundError('failed Unable to find item and delete')
+    }
 }
 
 
